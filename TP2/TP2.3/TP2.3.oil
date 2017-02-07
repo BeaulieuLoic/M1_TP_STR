@@ -26,7 +26,7 @@ CPU test {
         STATUS = EXTENDED;
         ERRORHOOK = FALSE;
         PRETASKHOOK = FALSE;
-        APP_SRC = "TP2.3.c"; 
+        APP_SRC = "TP2.3.c";
         APP_NAME = "TP2.3_exe";
         TRAMPOLINE_BASE_PATH = "/private/student/6/16/17000416/Documents/STR/git/../osek_env/trampoline/";
         CFLAGS = "-g -c -ffreestanding -fsigned-char -mcpu=arm7tdmi -Os -Winline -Wall -Werror-implicit-function-declaration --param max-inline-insns-single=1000 -ffunction-sections -fdata-sections -std=gnu99";
@@ -34,7 +34,7 @@ CPU test {
         LDFLAGS = "-g --cref --allow-multiple-definition --gc-sections";
         LDFLAGS = "-L/private/student/6/16/17000416/Documents/STR/git/../osek_env/arm-elf//lib/gcc/arm-elf/4.5.1/ -lgcc -L/private/student/6/16/17000416/Documents/STR/git/../osek_env/arm-elf//arm-elf/lib -lc";
         SYSTEM_CALL = TRUE;
-        
+
         COMPILER = "arm-elf-gcc";
         ASSEMBLER = "arm-elf-as";
         LINKER = "arm-elf-ld";
@@ -49,18 +49,75 @@ CPU test {
     APPMODE std {
     };
 
-    TASK task1 {
+    TASK task_systime {
+        PRIORITY = 1;
+        AUTOSTART = FALSE;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+    };
+
+    TASK task_pression {
+        PRIORITY = 1;
+        AUTOSTART = FALSE;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+    };
+
+    TASK task_distance {
+        PRIORITY = 1;
+        AUTOSTART = FALSE;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+    };
+
+    TASK task_boutondroit {
         PRIORITY = 1;
         AUTOSTART = TRUE { APPMODE = std; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
-    };   
-    
+    };
+
+    ALARM alarm_systime {
+      COUNTER = SystemCounter;
+      ACTION = ACTIVATETASK {
+        TASK = task_systime;
+      };
+      AUTOSTART = TRUE {
+        ALARMTIME = 100;
+        CYCLETIME = 1000;
+        APPMODE = std;
+      };
+    };
+
+    ALARM alarm_pression {
+      COUNTER = SystemCounter;
+      ACTION = ACTIVATETASK {
+        TASK = task_pression;
+      };
+      AUTOSTART = TRUE {
+        ALARMTIME = 100;
+        CYCLETIME = 3000;
+        APPMODE = std;
+      };
+    };
+
+    ALARM alarm_distance {
+      COUNTER = SystemCounter;
+      ACTION = ACTIVATETASK {
+        TASK = task_distance;
+      };
+      AUTOSTART = TRUE {
+        ALARMTIME = 100;
+        CYCLETIME = 2000;
+        APPMODE = std;
+      };
+    };
+
     COUNTER SystemCounter {
       SOURCE = it_timer1;
-      MAXALLOWEDVALUE = 2000;
+      MAXALLOWEDVALUE = 3000;
       TICKSPERBASE = 1;
-      MINCYCLE = 1; 
+      MINCYCLE = 1;
     };
 
    ISR isr_button_start {
@@ -89,4 +146,3 @@ CPU test {
 };
 
 /* End of file nxt_simple.oil */
-
