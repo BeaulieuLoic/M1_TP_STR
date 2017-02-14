@@ -75,6 +75,7 @@ CPU test {
         AUTOSTART = TRUE { APPMODE = std; };
         ACTIVATION = 1;
         SCHEDULE = FULL;
+        EVENT = EvOff;
     };
 
     ALARM alarm_systime {
@@ -111,6 +112,10 @@ CPU test {
         CYCLETIME = 2000;
         APPMODE = std;
       };
+    };
+
+    EVENT EvOff {
+      MASK = AUTO;
     };
 
     COUNTER SystemCounter {

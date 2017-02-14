@@ -36,6 +36,8 @@ DeclareAlarm(alarm_systime);
 DeclareAlarm(alarm_pression);
 DeclareAlarm(alarm_distance);
 
+DeclareEvent(EvOff);
+
 TASK(task_systime)
 {
   //display_clear(0);
@@ -68,6 +70,13 @@ TASK(task_distance)
 
 TASK(task_boutondroit)
 {
+
+  //SetEvent(task_boutondroit,1);
+  WaitEvent(EvOff);
+
+  ShutdownOS(0);
+
+
   TerminateTask();
 }
 
@@ -90,7 +99,9 @@ ISR(isr_button_left)
 
 ISR(isr_button_right)
 {
-    ecrobot_status_monitor("isr_button_right");
+
+    //ecrobot_status_monitor("isr_button_right");
+    SetEvent(task_boutondroit, EvOff);
 
 }
 
