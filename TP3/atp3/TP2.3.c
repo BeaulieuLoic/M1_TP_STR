@@ -27,6 +27,9 @@ FUNC(int, OS_APPL_CODE) main(void)
     return 0;
 }
 // a copier ---------------------------------------------------------------------------------------------------------------------
+int periode = 0;//periode
+int distance = 0;
+
 DeclareTask(task_detection_contact);
 DeclareTask(task_detection_distance);
 DeclareTask(task_navigation);
@@ -54,14 +57,29 @@ TASK(task_detection_distance)
 
 TASK(task_navigation)
 {
+  GetResource(res_distance);
   if(){// distance  = 0
+    ReleaseResource(res_distance);
 
   }else if(){// distance  < 50
+    ReleaseResource(res_distance);
 
   }else{
+    ReleaseResource(res_distance);
+    if (periode == 10){
+      periode = 0;
 
+
+
+    }
   }
 
+
+  if (periode == 10){
+    periode = 0;
+  }else{
+    periode++;
+  }
   TerminateTask();
 }
 //---------------------------------------------------------------------------------------------------------------------
