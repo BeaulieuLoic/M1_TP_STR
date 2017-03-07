@@ -51,9 +51,9 @@ task_detection_contact n'à pas de nouveau été executer
 
 */
 
-int periode = 0;//periode
-int distance = 200;
-int contacteCapteur = 0;
+int periode = 0; //periode
+int distance = 200; // Distance : c'est la variable partagée
+int contacteCapteur = 0; // Activer (1) ou désactive (0) les capteurs pressions
 
 DeclareTask(task_detection_contact);
 DeclareTask(task_detection_distance);
@@ -70,6 +70,7 @@ int rand_0_100(){
   return systick_get_ms() % 101;
 }
 
+// Fonction pour activer les moteurs à l'identique
 void definirVitesse(int vitesse){
   if (activer_moteur)
   {
@@ -78,6 +79,7 @@ void definirVitesse(int vitesse){
   }
 }
 
+// Fonction pour tourner à droite
 void tournerRobotDroite(int vitesse){
   if (activer_moteur)
   {
@@ -86,6 +88,7 @@ void tournerRobotDroite(int vitesse){
   }
 }
 
+// Fonction pour tourner à gauche
 void tournerRobotGauche(int vitesse){
   if (activer_moteur)
   {
@@ -94,7 +97,8 @@ void tournerRobotGauche(int vitesse){
   }
 }
 
-
+// Tâche pour gérer la détection d'un contact
+// avec gestion des ressources partagées
 TASK(task_detection_contact)
 {
   if(ecrobot_get_touch_sensor(port_pare_choc_gauche) 
@@ -115,6 +119,8 @@ TASK(task_detection_contact)
   TerminateTask();
 }
 
+// Tâche pour mettre à jour la variable distance en fonction des capte
+// Seulement si le capteur ne détecte aucun obstacle
 TASK(task_detection_distance)
 {
   int distCapteur = ecrobot_get_sonar_sensor(port_ultrason);
@@ -130,11 +136,12 @@ TASK(task_detection_distance)
     ReleaseResource(res_correction);
   }
 
-  
 
   TerminateTask();
 }
 
+// Tâche qui commande les moteurs en fonction de la distance
+// ET du capteur de pression
 TASK(task_navigation)
 {
   display_clear(0);
@@ -148,7 +155,7 @@ TASK(task_navigation)
   display_update();
 
   
-  if(distance == 0){// distance  = 0
+  if(distance == 0){
     ReleaseResource(res_distance);
 
     display_goto_xy(0,3);
@@ -157,18 +164,14 @@ TASK(task_navigation)
     definirVitesse(marcheArriere);
 
 
-  }else if(distance < 50){// distance  < 50
+  }else if(distance < 50){
     ReleaseResource(res_distance);
 
     tournerRobotGauche(marcheAvant);
 
-
-
     display_goto_xy(0,3);
     display_string("distance < 50");
     display_update();
-
-      
 
   }else{
     ReleaseResource(res_distance);
@@ -178,22 +181,17 @@ TASK(task_navigation)
       int vitesseRand = (rand_0_100() + 20) % 100;
       int gauche = rand_0_100() % 2;
 
-
       display_goto_xy(0,3);
       display_string("periode à 10");
       display_goto_xy(0,4);
       display_int(vitesseRand,3);
       display_update();
 
-
-
       if (gauche){
         tournerRobotGauche(vitesseRand);
       }else{
         tournerRobotDroite(vitesseRand);
       }
-
-
     }
   }
 

@@ -30,11 +30,13 @@ FUNC(int, OS_APPL_CODE) main(void)
 #define port_ultrason NXT_PORT_S1
 #define port_moteur_gauche NXT_PORT_A
 #define port_moteur_droite NXT_PORT_B
-#define distanceVoulu 20
-#define distMax 255
-#define activer_moteur 1
 
-int distance = 200;
+#define distanceVoulu 20 // Distance souhaitée
+#define distMax 255
+#define activer_moteur 1 // Activer (1) ou désactiver (0) moteurs (pour débuguer)
+
+// Distance : c'est la variable partagée
+int distance = distanceVoulu;
 
 DeclareTask(task_detection_distance);
 DeclareTask(task_navigation);
@@ -44,6 +46,7 @@ DeclareAlarm(alarm_navigation);
 
 DeclareResource(res_distance);
 
+// Fonction pour activer les moteurs à l'identique
 void definirVitesse(int vitesse){
   if (activer_moteur)
   {
@@ -52,16 +55,18 @@ void definirVitesse(int vitesse){
   }
 }
 
+// Tâche pour mettre à jour la variable distance en fonction des capteurs
 TASK(task_detection_distance)
 {
   int distCapteur = ecrobot_get_sonar_sensor(port_ultrason);
-
+  // Récupération de la ressource pour éviter les conflits
   GetResource(res_distance);
   distance = distCapteur;
   ReleaseResource(res_distance);
   TerminateTask();
 }
 
+// Tâche qui commande les moteurs en fonction de la distance
 TASK(task_navigation)
 {
   display_clear(0);
@@ -74,21 +79,21 @@ TASK(task_navigation)
 
   display_int(distance,3);
   
-
-  float vitProp = ((float) (distance-distanceVoulu) / (float) (255-distanceVoulu) )*100.0; 
+  // Calcul d'une vitesse proportionnelle en fonction de la distance
+  float vitProp = ((float) (distance-distanceVoulu) / (float) (distMax-distanceVoulu) )*100.0; 
 
   int vitesse = (int) vitProp ;
 
-  if (vitesse < 2 && vitesse > -2){
+  // Laisser une marge de +/- 3 de distance car capteur peu précis
+  if (distance <= distanceVoulu+3 && distance >= distanceVoulu-3){
     vitesse = 0;
   }
 
-  if (-20 < vitesse && vitesse < 0)
-  {
-    vitesse += -20;
-  }else if (20 > vitesse && vitesse > 0)
-  {
-    vitesse += 20;
+  // Ne pas autoriser une vitesse entre 15 et -15 sinon pas assez de puissance pour bouger
+  if (-15 < vitesse && vitesse < 0){
+    vitesse = -15;
+  }else if (15 > vitesse && vitesse > 0){
+    vitesse = 15;
   }
 
 
