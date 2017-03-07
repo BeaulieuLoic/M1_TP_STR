@@ -49,8 +49,6 @@ solution :
 interdire la tache task_detection_distance d'écrire tant que la tache 
 task_detection_contact n'à pas de nouveau été executer
 
-
-
 */
 
 int periode = 0;//periode
